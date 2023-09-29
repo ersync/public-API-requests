@@ -1,12 +1,12 @@
 const numEmployees = 12
 const url = `https://randomuser.me/api/?results=${numEmployees}&nat=us`;
 const gallery = document.querySelector("#gallery")
+const searchInput = document.querySelector("#search-input")
 
 async function getEmployees(url) {
     const response = await fetch(url)
     const json = await response.json()
-    const employees = json.results
-    return employees
+    return json.results
 }
 
 function createCard(employee) {
@@ -23,10 +23,8 @@ function createCard(employee) {
                 </div>
             </div>`
     gallery.insertAdjacentHTML("beforeend", html)
-    const card = gallery.lastElementChild
-    card.addEventListener("click", (e) =>
-        createModal(employee)
-    )
+    const currentCard = gallery.lastElementChild
+    currentCard.addEventListener("click", () => createModal(employee))
 }
 
 function createModal(employee) {
@@ -56,15 +54,30 @@ function createModal(employee) {
                 </div>`
     gallery.insertAdjacentHTML("beforeend", html)
     const activeModal = document.querySelector(".modal")
-    activeModal.firstElementChild.addEventListener("click", (e) => {
-        (activeModal).parentElement.remove()
+    activeModal.firstElementChild.addEventListener("click", () => activeModal.parentElement.remove())
+
+}
+
+
+function search(employees) {
+    searchInput.addEventListener("keyup", (e) => {
+        gallery.innerHTML = ""
+        const filteredList = employees.filter(emplyee => lookupEmployees(emplyee, e.target.value.toLowerCase()))
+        filteredList.forEach(createCard)
     })
+
+}
+
+function lookupEmployees(employee, str) {
+    const fullName = `${employee.name.first.toLowerCase()} ${employee.name.last.toLowerCase()}`
+    return fullName.includes(str)
 }
 
 
 async function showEmployees(url) {
     const employees = await getEmployees(url)
     employees.forEach(createCard)
+    search(employees)
 }
 
 
