@@ -10,6 +10,7 @@ async function getEmployees(url) {
     const response = await fetch(url)
     const json = await response.json()
     return json.results
+
 }
 
 /* createCard(employee, i, employees): This function creates a card element for a given employee and inserts it into
@@ -107,6 +108,7 @@ function updateModal(employees) {
         cell,
         dob,
     } = employees[currentIndex]
+
     let birthday = new Date(dob.date).toLocaleDateString("en-US")
     let fullAddress = `${streetNumber} ${streetName}, ${city}, ${state}, ${postcode}`
     let currentModal = document.querySelector(".modal")
@@ -135,7 +137,7 @@ function search(employees) {
     searchInput.addEventListener("keyup", (e) => {
         gallery.innerHTML = ""
         const filteredList = employees.filter(employee => lookupEmployees(employee, e.target.value))
-        filteredList.forEach(createCard)
+        filteredList.length === 0 ? noResults() : forEach(createCard)
     })
 
 }
@@ -151,6 +153,10 @@ function lookupEmployees(employee, str) {
 /* showEmployees(url): This function fetches employee data from the specified URL, creates cards for each employee,
  and adds search functionality to the gallery.
  */
+function noResults() {
+    gallery.innerHTML = "<h3>No results found</h3>"
+}
+
 async function showEmployees(url) {
     const employees = await getEmployees(url)
     employees.forEach(createCard)
