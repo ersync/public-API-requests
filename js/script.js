@@ -7,10 +7,13 @@ let currentIndex = 0
 /* getEmployees(url): This function fetches employee data from the specified URL and returns the results as an array
  of objects.*/
 async function getEmployees(url) {
-    const response = await fetch(url)
-    const json = await response.json()
-    return json.results
-
+    try {
+        const response = await fetch(url)
+        const json = await response.json()
+        return json.results
+    } catch (e) {
+        console.error('Error:', e);
+    }
 }
 
 /* createCard(employee, i, employees): This function creates a card element for a given employee and inserts it into
