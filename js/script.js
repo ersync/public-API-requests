@@ -1,7 +1,8 @@
 const numEmployees = 12
-const url = `https://randomuser.me/api/?results=${numEmployees}&nat=us`;
+const url = `https://randomuser.me/api/?results=${numEmployees}&nat=us`
 const gallery = document.querySelector("#gallery")
 const searchInput = document.querySelector("#search-input")
+let currentIndex = 0
 
 async function getEmployees(url) {
     const response = await fetch(url)
@@ -24,10 +25,14 @@ function createCard(employee, i, employees) {
             </div>`
     gallery.insertAdjacentHTML("beforeend", html)
     const currentCard = gallery.lastElementChild
-    currentCard.addEventListener("click", () => createModal(employee, i, employees))
+    currentCard.addEventListener("click", () => {
+        currentIndex = i
+        createModal(employees)
+    })
 }
 
-function createModal(employee, i, employees) {
+
+function createModal(employees) {
     const {
         name,
         email,
@@ -35,8 +40,8 @@ function createModal(employee, i, employees) {
         location: {city, state, street: {name: streetName, number: streetNumber}, postcode},
         cell,
         dob,
-    } = employee
-    const birthday = new Date(dob.date).toLocaleDateString('en-US')
+    } = employees[currentIndex]
+    const birthday = new Date(dob.date).toLocaleDateString("en-US")
     let html = `<div class="modal-container">
                     <div class="modal">
                         <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
@@ -57,35 +62,63 @@ function createModal(employee, i, employees) {
                 </div>
                 </div>`
     gallery.insertAdjacentHTML("beforeend", html)
-    const activeModal = document.querySelector(".modal")
-    activeModal.firstElementChild.addEventListener("click", () => activeModal.parentElement.remove())
-    const modalPrev = document.querySelector("#modal-prev")
-    const modalNext = document.querySelector("#modal-next")
-    modalPrev.disabled = i === 0
-    modalNext.disabled = i === employees.length - 1
-    console.log(i)
-    modalNext.addEventListener("click", (e) => {
-        const activeModal = document.querySelector(".modal")
-        activeModal.parentElement.remove()
-        const nextModalIndex = i + 1
-        console.log(nextModalIndex)
-        createModal(employees[nextModalIndex], nextModalIndex, employees)
 
+    const currentModal = document.querySelector(".modal")
+    currentModal.firstElementChild.addEventListener("click", () => currentModal.parentElement.remove())
+    const [modalPrev, modalNext] = checkNavigationButtons()
+    modalNext.addEventListener("click", (e) => {
+        currentIndex++
+        updateModal(employees)
     })
     modalPrev.addEventListener("click", (e) => {
-        const activeModal = document.querySelector(".modal")
-        activeModal.parentElement.remove()
-        const lastModalIndex = i - 1
-        console.log(lastModalIndex)
-        createModal(employees[lastModalIndex], lastModalIndex, employees)
+        currentIndex--
+        updateModal(employees)
     })
+}
+
+function checkNavigationButtons() {
+    const modalPrev = document.querySelector("#modal-prev")
+    const modalNext = document.querySelector("#modal-next")
+    modalPrev.disabled = currentIndex === 0
+    modalNext.disabled = currentIndex === employees.length - 1
+    return [modalPrev, modalNext]
+}
+
+function updateModal(employees) {
+    checkNavigationButtons()
+    const {
+        name,
+        email,
+        picture,
+        location: {city, state, street: {name: streetName, number: streetNumber}, postcode},
+        cell,
+        dob,
+    } = employees[currentIndex]
+    let birthday = new Date(dob.date).toLocaleDateString("en-US")
+    let fullAddress = `${streetNumber} ${streetName}, ${city}, ${state}, ${postcode}`
+    let currentModal = document.querySelector(".modal")
+    let imgModal = currentModal.querySelector(".modal-img")
+    let nameModal = currentModal.querySelector("#name")
+    let emailModal = currentModal.querySelector(".modal-text")
+    let cityModal = emailModal.nextElementSibling
+    let phoneModal = cityModal.nextElementSibling.nextElementSibling
+    let addressModal = phoneModal.nextElementSibling
+    let birthdayModal = addressModal.nextElementSibling
+
+    imgModal.src = picture.large
+    nameModal.textContent = `${name.first} ${name.last}`
+    emailModal.textContent = email
+    cityModal.textContent = city
+    phoneModal.textContent = cell
+    addressModal.textContent = fullAddress
+    birthdayModal.textContent = birthday
 }
 
 
 function search(employees) {
     searchInput.addEventListener("keyup", (e) => {
         gallery.innerHTML = ""
-        const filteredList = employees.filter(emplyee => lookupEmployees(emplyee, e.target.value.toLowerCase()))
+        const filteredList = employees.filter(employee => lookupEmployees(employee, e.target.value))
         filteredList.forEach(createCard)
     })
 
@@ -93,15 +126,13 @@ function search(employees) {
 
 function lookupEmployees(employee, str) {
     const fullName = `${employee.name.first.toLowerCase()} ${employee.name.last.toLowerCase()}`
-    return fullName.includes(str)
+    return fullName.includes(str.toLowerCase())
 }
-
 
 async function showEmployees(url) {
     const employees = await getEmployees(url)
     employees.forEach(createCard)
     search(employees)
 }
-
 
 showEmployees(url)
