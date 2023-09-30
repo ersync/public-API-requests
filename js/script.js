@@ -4,12 +4,17 @@ const gallery = document.querySelector("#gallery")
 const searchInput = document.querySelector("#search-input")
 let currentIndex = 0
 
+/* getEmployees(url): This function fetches employee data from the specified URL and returns the results as an array
+ of objects.*/
 async function getEmployees(url) {
     const response = await fetch(url)
     const json = await response.json()
     return json.results
 }
 
+/* createCard(employee, i, employees): This function creates a card element for a given employee and inserts it into
+ the gallery. It also adds a click event listener to the card that opens a modal with more details about the employee.
+ */
 function createCard(employee, i, employees) {
     const {name, email, picture, location: {city, state}} = employee
     let html = `
@@ -31,7 +36,9 @@ function createCard(employee, i, employees) {
     })
 }
 
-
+/* createModal(employees): This function creates a modal element with detailed information about the currently
+ selected employee. It also adds event listeners to the modal's close button and navigation buttons.
+ */
 function createModal(employees) {
     const {
         name,
@@ -76,6 +83,9 @@ function createModal(employees) {
     })
 }
 
+/* checkNavigationButtons(): This function checks the current index of the selected employee and disables the
+ previous and next navigation buttons if necessary. It returns an array containing references to the previous and next buttons.
+ */
 function checkNavigationButtons() {
     const modalPrev = document.querySelector("#modal-prev")
     const modalNext = document.querySelector("#modal-next")
@@ -84,6 +94,9 @@ function checkNavigationButtons() {
     return [modalPrev, modalNext]
 }
 
+/* updateModal(employees): This function updates the content of the modal with the details of the currently selected
+ employee. It also calls checkNavigationButtons() to update the navigation buttons.
+ */
 function updateModal(employees) {
     checkNavigationButtons()
     const {
@@ -114,7 +127,10 @@ function updateModal(employees) {
     birthdayModal.textContent = birthday
 }
 
-
+/* search(employees): This function adds a keyup event listener to the search input field. It filters the list of
+ employees based on the
+ search input and updates the gallery accordingly.
+ */
 function search(employees) {
     searchInput.addEventListener("keyup", (e) => {
         gallery.innerHTML = ""
@@ -124,11 +140,17 @@ function search(employees) {
 
 }
 
+/* lookupEmployees(employee, str): This function checks if the full name of an employee matches the search string.
+ It returns true if there is a match, false otherwise.
+ */
 function lookupEmployees(employee, str) {
     const fullName = `${employee.name.first.toLowerCase()} ${employee.name.last.toLowerCase()}`
     return fullName.includes(str.toLowerCase())
 }
 
+/* showEmployees(url): This function fetches employee data from the specified URL, creates cards for each employee,
+ and adds search functionality to the gallery.
+ */
 async function showEmployees(url) {
     const employees = await getEmployees(url)
     employees.forEach(createCard)
