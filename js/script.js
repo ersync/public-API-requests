@@ -9,7 +9,7 @@ async function getEmployees(url) {
     return json.results
 }
 
-function createCard(employee) {
+function createCard(employee, i, employees) {
     const {name, email, picture, location: {city, state}} = employee
     let html = `
             <div class="card">
@@ -24,10 +24,10 @@ function createCard(employee) {
             </div>`
     gallery.insertAdjacentHTML("beforeend", html)
     const currentCard = gallery.lastElementChild
-    currentCard.addEventListener("click", () => createModal(employee))
+    currentCard.addEventListener("click", () => createModal(employee, i, employees))
 }
 
-function createModal(employee) {
+function createModal(employee, i, employees) {
     const {
         name,
         email,
@@ -51,11 +51,34 @@ function createModal(employee) {
                             <p class="modal-text">Birthday: ${birthday}</p>
                         </div>
                     </div>
+                    <div class="modal-btn-container">
+                    <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+                    <button type="button" id="modal-next" class="modal-next btn">Next</button>
+                </div>
                 </div>`
     gallery.insertAdjacentHTML("beforeend", html)
     const activeModal = document.querySelector(".modal")
     activeModal.firstElementChild.addEventListener("click", () => activeModal.parentElement.remove())
+    const modalPrev = document.querySelector("#modal-prev")
+    const modalNext = document.querySelector("#modal-next")
+    modalPrev.disabled = i === 0
+    modalNext.disabled = i === employees.length - 1
+    console.log(i)
+    modalNext.addEventListener("click", (e) => {
+        const activeModal = document.querySelector(".modal")
+        activeModal.parentElement.remove()
+        const nextModalIndex = i + 1
+        console.log(nextModalIndex)
+        createModal(employees[nextModalIndex], nextModalIndex, employees)
 
+    })
+    modalPrev.addEventListener("click", (e) => {
+        const activeModal = document.querySelector(".modal")
+        activeModal.parentElement.remove()
+        const lastModalIndex = i - 1
+        console.log(lastModalIndex)
+        createModal(employees[lastModalIndex], lastModalIndex, employees)
+    })
 }
 
 
