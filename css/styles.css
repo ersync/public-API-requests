@@ -16,7 +16,7 @@ html, body {
 body {
     font-family: "Nunito", sans-serif;
     text-align: center;
-    background: linear-gradient(68.6deg, rgb(252, 165, 241) 1.8%, rgb(181, 255, 255) 100.5%);
+ background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
 }
 
 header {
@@ -82,8 +82,8 @@ header h1 {
     flex-wrap: nowrap;
     justify-content: flex-start;
     cursor: pointer;
-    width: 100%;
-    max-width: 360px;
+    height: 132px;
+    width: 360px;
     margin: 10px 10px 20px;
     padding: 10px;
     background: rgb(186 219 219 / 22%);

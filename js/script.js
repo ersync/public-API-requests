@@ -44,104 +44,112 @@ function createCard(employee, i, employees) {
  selected employee. It also adds event listeners to the modal's close button and navigation buttons.
  */
 function createModal(employees) {
-    const {
-        name,
-        email,
-        picture,
-        location: {city, state, street: {name: streetName, number: streetNumber}, postcode},
-        cell,
-        dob,
-    } = employees[currentIndex]
-    const birthday = new Date(dob.date).toLocaleDateString("en-US")
-    let html = `<div class="modal-container">
-                    <div class="modal">
-                        <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-                        <div class="modal-info-container">
-                            <img class="modal-img" src="${picture.large}" alt="profile picture">
-                            <h3 id="name" class="modal-name cap">${name.first} ${name.last}</h3>
-                            <p class="modal-text">${email}</p>
-                            <p class="modal-text cap">${city}</p>
-                            <hr>
-                            <p class="modal-text">${cell}</p>
-                            <p class="modal-text">${streetNumber} ${streetName}, ${city}, ${state}, ${postcode}</p>
-                            <p class="modal-text">Birthday: ${birthday}</p>
-                        </div>
-                    </div>
-                    <div class="modal-btn-container">
-                    <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-                    <button type="button" id="modal-next" class="modal-next btn">Next</button>
-                </div>
-                </div>`
-    gallery.insertAdjacentHTML("beforeend", html)
+     const {
+         name,
+         email,
+         picture,
+         location: {city, state, street: {name: streetName, number: streetNumber}, postcode},
+         cell,
+         dob,
+     } = employees[currentIndex]
+     const birthday = new Date(dob.date).toLocaleDateString("en-US")
+     let html = `<div class="modal-container">
+                     <div class="modal">
+                         <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+                         <div class="modal-info-container">
+                             <img class="modal-img" src="${picture.large}" alt="profile picture">
+                             <h3 id="name" class="modal-name cap">${name.first} ${name.last}</h3>
+                             <p class="modal-text">${email}</p>
+                             <p class="modal-text cap">${city}</p>
+                             <hr>
+                             <p class="modal-text">${cell}</p>
+                             <p class="modal-text">${streetNumber} ${streetName}, ${city}, ${state}, ${postcode}</p>
+                             <p class="modal-text">Birthday: ${birthday}</p>
+                         </div>
+                     </div>
+                     <div class="modal-btn-container">
+                         <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+                         <button type="button" id="modal-next" class="modal-next btn">Next</button>
+                     </div>
+                 </div>`
+     gallery.insertAdjacentHTML("beforeend", html)
 
-    const currentModal = document.querySelector(".modal")
-    currentModal.firstElementChild.addEventListener("click", () => currentModal.parentElement.remove())
-    const [modalPrev, modalNext] = checkNavigationButtons()
-    modalNext.addEventListener("click", (e) => {
-        currentIndex++
-        updateModal(employees)
-    })
-    modalPrev.addEventListener("click", (e) => {
-        currentIndex--
-        updateModal(employees)
-    })
-}
-
+     const currentModal = document.querySelector(".modal-container")
+     currentModal.addEventListener("click", (e) => {
+     // If the click is directly on the modal container (outside the modal)
+     if (e.target === currentModal) {
+         currentModal.remove()
+     }
+ })
+     
+     currentModal.firstElementChild.firstElementChild.addEventListener("click", () => currentModal.remove())
+     
+     const [modalPrev, modalNext] = checkNavigationButtons(employees)
+     
+     modalNext.addEventListener("click", () => {
+         currentIndex++
+         updateModal(employees)
+     })
+     modalPrev.addEventListener("click", () => {
+         currentIndex--
+         updateModal(employees)
+     })
+ }
 /* checkNavigationButtons(): This function checks the current index of the selected employee and disables the
  previous and next navigation buttons if necessary. It returns an array containing references to the previous and next buttons.
  */
-function checkNavigationButtons() {
-    const modalPrev = document.querySelector("#modal-prev")
-    const modalNext = document.querySelector("#modal-next")
-    modalPrev.disabled = currentIndex === 0
-    modalNext.disabled = currentIndex === employees.length - 1
-    return [modalPrev, modalNext]
-}
+function checkNavigationButtons(employees) {
+     const modalPrev = document.querySelector("#modal-prev")
+     const modalNext = document.querySelector("#modal-next")
+     modalPrev.disabled = currentIndex === 0
+     modalNext.disabled = currentIndex === employees.length - 1
+     return [modalPrev, modalNext]
+ }
 
 /* updateModal(employees): This function updates the content of the modal with the details of the currently selected
  employee. It also calls checkNavigationButtons() to update the navigation buttons.
  */
 function updateModal(employees) {
-    checkNavigationButtons()
-    const {
-        name,
-        email,
-        picture,
-        location: {city, state, street: {name: streetName, number: streetNumber}, postcode},
-        cell,
-        dob,
-    } = employees[currentIndex]
-
-    let birthday = new Date(dob.date).toLocaleDateString("en-US")
-    let fullAddress = `${streetNumber} ${streetName}, ${city}, ${state}, ${postcode}`
-    let currentModal = document.querySelector(".modal")
-    let imgModal = currentModal.querySelector(".modal-img")
-    let nameModal = currentModal.querySelector("#name")
-    let emailModal = currentModal.querySelector(".modal-text")
-    let cityModal = emailModal.nextElementSibling
-    let phoneModal = cityModal.nextElementSibling.nextElementSibling
-    let addressModal = phoneModal.nextElementSibling
-    let birthdayModal = addressModal.nextElementSibling
-
-    imgModal.src = picture.large
-    nameModal.textContent = `${name.first} ${name.last}`
-    emailModal.textContent = email
-    cityModal.textContent = city
-    phoneModal.textContent = cell
-    addressModal.textContent = fullAddress
-    birthdayModal.textContent = birthday
-}
-
+     const [modalPrev, modalNext] = checkNavigationButtons(employees)
+     
+     const {
+         name,
+         email,
+         picture,
+         location: {city, state, street: {name: streetName, number: streetNumber}, postcode},
+         cell,
+         dob,
+     } = employees[currentIndex]
+ 
+     let birthday = new Date(dob.date).toLocaleDateString("en-US")
+     let fullAddress = `${streetNumber} ${streetName}, ${city}, ${state}, ${postcode}`
+     let currentModal = document.querySelector(".modal")
+     let imgModal = currentModal.querySelector(".modal-img")
+     let nameModal = currentModal.querySelector("#name")
+     let emailModal = currentModal.querySelector(".modal-text")
+     let cityModal = emailModal.nextElementSibling
+     let phoneModal = cityModal.nextElementSibling.nextElementSibling
+     let addressModal = phoneModal.nextElementSibling
+     let birthdayModal = addressModal.nextElementSibling
+ 
+     imgModal.src = picture.large
+     nameModal.textContent = `${name.first} ${name.last}`
+     emailModal.textContent = email
+     cityModal.textContent = city
+     phoneModal.textContent = cell
+     addressModal.textContent = fullAddress
+     birthdayModal.textContent = `Birthday: ${birthday}`
+ }
 /* search(employees): This function adds a keyup event listener to the search input field. It filters the list of
  employees based on the
  search input and updates the gallery accordingly.
  */
 function search(employees) {
-    searchInput.addEventListener("keyup", (e) => {
-        gallery.innerHTML = ""
-        const filteredList = employees.filter(employee => lookupEmployees(employee, e.target.value))
-        filteredList.length === 0 ? noResults() : forEach(createCard)
-    })
+     searchInput.addEventListener("keyup", (e) => {
+         gallery.innerHTML = ""
+         const filteredList = employees.filter(employee => lookupEmployees(employee, e.target.value))
+         filteredList.length === 0 ? noResults() : filteredList.forEach((employee, i) => createCard(employee, i, filteredList))
+     })
 
 }
 
